@@ -20,11 +20,11 @@ public record ProductoCreateRequest(
         String descripcion,
 
         @NotBlank(message = "La marca es obligatoria") 
-        @Size(min = 4, message = "La marca debe tener al menos 4 caracteres")
+        @Size(min = 2, message = "La marca debe tener al menos 4 caracteres")
         String marca,
 
         @Positive(message = "El precio debe ser un valor positivo") 
         float precio,
         
-        Long categoria) {
+        int categoria) {
 }

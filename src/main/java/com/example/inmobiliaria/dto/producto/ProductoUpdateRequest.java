@@ -24,8 +24,6 @@ public record ProductoUpdateRequest(
         String marca,
 
         @Positive(message = "El precio debe ser un valor positivo") 
-        float precio,
-        
-        Long categoria
+        float precio
 ) {  
 }

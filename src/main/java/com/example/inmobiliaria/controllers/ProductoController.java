@@ -1,0 +1,52 @@
+package com.example.inmobiliaria.controllers;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.inmobiliaria.dto.producto.ProductoCreateRequest;
+import com.example.inmobiliaria.dto.producto.ProductoResponse;
+import com.example.inmobiliaria.dto.producto.ProductoUpdateRequest;
+import com.example.inmobiliaria.services.producto.ProductoService;
+
+import jakarta.validation.Valid;
+
+@RequestMapping("/api/producto")
+@RestController
+@CrossOrigin(origins = "*")
+public class ProductoController {
+    private final ProductoService productoService;
+
+    public ProductoController(ProductoService productoService) {
+        this.productoService = productoService;
+    }
+    
+    @PostMapping("/register")
+    public ProductoResponse registrar(@Valid @RequestBody ProductoCreateRequest request) {
+
+        return productoService.registrar(request);
+    }
+
+    @GetMapping("/listar")
+    public Page<ProductoResponse> listarProductos(Pageable pageable) {
+        return productoService.listarProductos(pageable);
+    }
+
+    @PutMapping("/actualizar/{id}")
+    public void actualizar(@PathVariable Integer id, @Valid @RequestBody ProductoUpdateRequest request) {
+        this.productoService.actualizar(id, request);
+    }
+
+    @DeleteMapping("/{id}")
+    public void eliminar(@PathVariable Integer id) {
+        this.productoService.eliminar(id);
+    }
+}

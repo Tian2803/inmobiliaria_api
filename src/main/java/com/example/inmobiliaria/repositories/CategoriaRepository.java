@@ -7,4 +7,6 @@ import com.example.inmobiliaria.models.Categoria;
 
 @Repository
 public interface CategoriaRepository extends JpaRepository<Categoria, Integer> {
+    Boolean existsByCodigo(String codigo);
+    Boolean existsByNombre(String nombre);
 }

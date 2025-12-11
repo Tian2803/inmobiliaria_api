@@ -16,6 +16,13 @@ public record CategoriaCreateRequest(
 
         @NotBlank(message = "La descripción es obligatoria")
         @Size(min = 4, message = "La descripción debe tener al menos 4 caracteres") 
-        String descripcion
+        String descripcion,
+
+        Boolean activo
 ) {
+    public CategoriaCreateRequest {
+        if (activo == null) {
+            activo = true;
+        }
+    }
 }
