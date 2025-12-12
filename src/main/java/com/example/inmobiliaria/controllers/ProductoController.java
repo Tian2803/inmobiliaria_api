@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.inmobiliaria.dto.ResumenDTO;
 import com.example.inmobiliaria.dto.producto.ProductoCreateRequest;
 import com.example.inmobiliaria.dto.producto.ProductoResponse;
 import com.example.inmobiliaria.dto.producto.ProductoUpdateRequest;
@@ -53,5 +54,10 @@ public class ProductoController {
     @DeleteMapping("/{id}")
     public void eliminar(@PathVariable Integer id) {
         this.productoService.eliminar(id);
+    }
+
+    @GetMapping("/resumen")
+    public ResumenDTO obtenerResumen() {
+        return productoService.obtenerResumen();
     }
 }

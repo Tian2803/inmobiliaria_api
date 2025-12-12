@@ -30,4 +30,25 @@ public interface ProductoRepository extends JpaRepository<Producto, Integer> {
         @Param("precioMax") Float precioMax,
         Pageable pageable
     );
+
+    @Query("SELECT SUM(p.precio) FROM Producto p")
+    Double sumTotalPrecios();
+
+    @Query("SELECT SUM(p.precio) FROM Producto p WHERE p.categoria.activo = true")
+    Double sumPreciosCategoriasActivas();
+
+    @Query("SELECT SUM(p.precio) FROM Producto p WHERE p.categoria.activo = false")
+    Double sumPreciosCategoriasInactivas();
+
+    @Query("SELECT AVG(p.precio) FROM Producto p")
+    Double avgPrecios();
+
+    @Query("SELECT p FROM Producto p ORDER BY p.precio DESC LIMIT 1")
+    Producto findProductoMasCaro();
+
+    @Query("SELECT p FROM Producto p ORDER BY p.precio ASC LIMIT 1")
+    Producto findProductoMasBarato();
+
+    @Query("SELECT c.nombre, COUNT(p) FROM Producto p JOIN p.categoria c GROUP BY c.nombre")
+    java.util.List<Object[]> countProductosPorCategoria();
 }

@@ -1,6 +1,7 @@
 package com.example.inmobiliaria.services.producto;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,8 +10,11 @@ import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 
+import com.example.inmobiliaria.dto.ResumenDTO;
+import com.example.inmobiliaria.dto.categoria.CategoriaCantidadDTO;
 import com.example.inmobiliaria.dto.producto.ProductoCreateRequest;
 import com.example.inmobiliaria.dto.producto.ProductoResponse;
+import com.example.inmobiliaria.dto.producto.ProductoSimpleDTO;
 import com.example.inmobiliaria.dto.producto.ProductoUpdateRequest;
 import com.example.inmobiliaria.exceptions.CustomException;
 import com.example.inmobiliaria.mappers.ProductoMapper;
@@ -83,9 +87,55 @@ public class ProductoServiceImpl implements ProductoService {
     }
 
     @Override
-    public Object obtenerResumen() {
-        long totalProductos = productoRepository.count();
-        // Agregar más estadísticas si es necesario
-        return Map.of("totalProductos", totalProductos);
+    public ResumenDTO obtenerResumen() {
+        ResumenDTO resumen = new ResumenDTO();
+        
+        // Se obtiene la cantidad total de productos
+        resumen.setTotalProductos(productoRepository.count());
+        
+        // Se obtiene la cantidad total de categorías
+        resumen.setTotalCategorias(categoriaRepository.count());
+        
+        // Se calcula el valor total del inventario
+        Double valorInventario = productoRepository.sumTotalPrecios();
+        resumen.setValorInventario(valorInventario != null ? valorInventario : 0.0);
+        
+        // Se calcula el valor del inventario para categorías activas
+        Double valorActivas = productoRepository.sumPreciosCategoriasActivas();
+        resumen.setValorInventarioCategoriasActivas(valorActivas != null ? valorActivas : 0.0);
+        
+        // Se calcula el valor del inventario para categorías inactivas
+        Double valorInactivas = productoRepository.sumPreciosCategoriasInactivas();
+        resumen.setValorInventarioCategoriasInactivas(valorInactivas != null ? valorInactivas : 0.0);
+        
+        // Se calcula el promedio de precios
+        Double precioPromedio = productoRepository.avgPrecios();
+        resumen.setPrecioPromedio(precioPromedio != null ? precioPromedio : 0.0);
+        
+        // Se obtiene el producto más caro
+        Producto masCaro = productoRepository.findProductoMasCaro();
+        if (masCaro != null) {
+            resumen.setProductoMasCaro(new ProductoSimpleDTO(masCaro.getNombre(), masCaro.getPrecio()));
+        }
+        
+        // Se obtiene el producto más barato
+        Producto masBarato = productoRepository.findProductoMasBarato();
+        if (masBarato != null) {
+            resumen.setProductoMasBarato(new ProductoSimpleDTO(masBarato.getNombre(), masBarato.getPrecio()));
+        }
+        
+        // Lista la cantidad de productos por categoría
+        List<Object[]> resultados = productoRepository.countProductosPorCategoria();
+        List<CategoriaCantidadDTO> productosPorCategoria = new ArrayList<>();
+        
+        for (Object[] resultado : resultados) {
+            String nombreCategoria = (String) resultado[0];
+            Long cantidad = (Long) resultado[1];
+            productosPorCategoria.add(new CategoriaCantidadDTO(nombreCategoria, cantidad));
+        }
+        
+        resumen.setProductosPorCategoria(productosPorCategoria);
+        
+        return resumen;
     }
 }
