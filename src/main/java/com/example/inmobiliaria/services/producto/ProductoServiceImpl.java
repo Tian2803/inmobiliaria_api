@@ -44,15 +44,16 @@ public class ProductoServiceImpl implements ProductoService {
 
         Producto producto = productoMapper.toEntity(request);
         producto.setCategoria(categoriaRepository.findById(request.categoria())
-        .orElseThrow(() -> new CustomException("Categoría no encontrada", HttpStatus.NOT_FOUND)));
-        
+                .orElseThrow(() -> new CustomException("Categoría no encontrada", HttpStatus.NOT_FOUND)));
+
         Producto saved = productoRepository.save(producto);
         return productoMapper.toResponse(saved);
     }
 
     @Override
-    public Page<ProductoResponse> listarProductos(Pageable pageable) {
-        return productoRepository.findAll(pageable).map(productoMapper::toResponse);
+    public Page<ProductoResponse> listarProductos(String nombre, String marca, Integer categoria, Float precioMin, Float precioMax, Pageable pageable) {
+        return productoRepository.findByFiltros(nombre, marca, categoria, precioMin, precioMax, pageable)
+                .map(productoMapper::toResponse);
     }
 
     @Override
@@ -60,6 +61,15 @@ public class ProductoServiceImpl implements ProductoService {
         Producto producto = productoRepository.findById(id)
                 .orElseThrow(() -> new CustomException("Producto no encontrado", HttpStatus.NOT_FOUND));
 
+        if (request.codigo() != null && !request.codigo().equals(producto.getCodigo())
+                && productoRepository.existsByCodigo(request.codigo())) {
+            throw new CustomException("El código del producto ya existe.", HttpStatus.BAD_REQUEST);
+        }
+
+        if (request.nombre() != null && !request.nombre().equals(producto.getNombre())
+                && productoRepository.existsByNombre(request.nombre())) {
+            throw new CustomException("El nombre del producto ya existe.", HttpStatus.BAD_REQUEST);
+        }
         productoMapper.update(request, producto);
         productoRepository.save(producto);
     }
@@ -70,13 +80,6 @@ public class ProductoServiceImpl implements ProductoService {
         Producto producto = productoRepository.findById(id)
                 .orElseThrow(() -> new CustomException("Producto no encontrado", HttpStatus.NOT_FOUND));
         productoRepository.delete(producto);
-    }
-
-    @Override
-    public Page<ProductoResponse> filtrarProductos(String nombre, String marca, Float precioMin, Float precioMax,
-            Integer categoriaId, Pageable pageable) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'filtrarProductos'");
     }
 
     @Override

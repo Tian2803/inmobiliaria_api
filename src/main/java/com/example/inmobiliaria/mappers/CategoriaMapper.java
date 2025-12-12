@@ -9,6 +9,7 @@ import org.mapstruct.ReportingPolicy;
 
 import com.example.inmobiliaria.dto.categoria.CategoriaCreateRequest;
 import com.example.inmobiliaria.dto.categoria.CategoriaResponse;
+import com.example.inmobiliaria.dto.categoria.CategoriaSimpleResponse;
 import com.example.inmobiliaria.dto.categoria.CategoriaUpdateRequest;
 import com.example.inmobiliaria.models.Categoria;
 
@@ -19,6 +20,7 @@ public interface CategoriaMapper {
     Categoria toEntity(CategoriaCreateRequest request);
 
     CategoriaResponse toResponse(Categoria entity);
+    CategoriaSimpleResponse toSimpleResponse(Categoria entity);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)

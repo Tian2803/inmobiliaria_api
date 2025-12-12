@@ -1,7 +1,7 @@
 package com.example.inmobiliaria.dto.producto;
 
 public record ProductoResponse(
-    int id,
+    Integer id,
     String codigo,
     String nombre,
     String descripcion,

@@ -10,8 +10,7 @@ import com.example.inmobiliaria.dto.producto.ProductoUpdateRequest;
 public interface ProductoService {
     ProductoResponse registrar(ProductoCreateRequest request);
     void actualizar(Integer id, ProductoUpdateRequest request);
-    Page<ProductoResponse> listarProductos(Pageable pageable);
+    Page<ProductoResponse> listarProductos(String nombre, String marca, Integer categoria, Float precioMin, Float precioMax, Pageable pageable);
     void eliminar(Integer id);
-    Page<ProductoResponse> filtrarProductos(String nombre, String marca, Float precioMin, Float precioMax, Integer categoriaId, Pageable pageable);
     Object obtenerResumen(); // Podría ser un DTO con estadísticas
 }

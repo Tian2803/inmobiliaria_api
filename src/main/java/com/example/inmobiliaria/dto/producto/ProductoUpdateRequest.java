@@ -1,6 +1,7 @@
 package com.example.inmobiliaria.dto.producto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
@@ -20,10 +21,13 @@ public record ProductoUpdateRequest(
         String descripcion,
 
         @NotBlank(message = "La marca es obligatoria") 
-        @Size(min = 4, message = "La marca debe tener al menos 4 caracteres")
+        @Size(min = 2, message = "La marca debe tener al menos 4 caracteres")
         String marca,
 
         @Positive(message = "El precio debe ser un valor positivo") 
-        float precio
-) {  
+        @NotNull(message = "El precio es obligatorio")
+        Float precio,
+
+        @NotNull(message = "La categoría es obligatoria")
+        Integer categoria) {  
 }

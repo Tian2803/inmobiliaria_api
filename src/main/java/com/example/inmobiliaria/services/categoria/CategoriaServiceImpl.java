@@ -1,11 +1,14 @@
 package com.example.inmobiliaria.services.categoria;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 
 import com.example.inmobiliaria.dto.categoria.CategoriaCreateRequest;
 import com.example.inmobiliaria.dto.categoria.CategoriaResponse;
+import com.example.inmobiliaria.dto.categoria.CategoriaSimpleResponse;
 import com.example.inmobiliaria.dto.categoria.CategoriaUpdateRequest;
 import com.example.inmobiliaria.exceptions.CustomException;
 import com.example.inmobiliaria.mappers.CategoriaMapper;
@@ -47,14 +50,25 @@ public class CategoriaServiceImpl implements CategoriaService {
     }
 
     @Override
-    public Page<CategoriaResponse> listarCategorias(Pageable pageable) {
-        return categoriaRepository.findAll(pageable).map(categoriaMapper::toResponse);
+    public Page<CategoriaResponse> listarCategorias(String codigo, String nombre, Boolean activo, Pageable pageable) {
+        return categoriaRepository.findByFiltros(codigo, nombre, activo, pageable).map(categoriaMapper::toResponse);
     }
 
     @Override
     public void actualizarCategoria(Integer id, CategoriaUpdateRequest request) {
         Categoria categoria = categoriaRepository.findById(id)
                 .orElseThrow(() -> new CustomException("Categoría no encontrada", HttpStatus.NOT_FOUND));
+        
+        if (request.codigo() != null && !request.codigo().equals(categoria.getCodigo())
+                && categoriaRepository.existsByCodigo(request.codigo())) {
+            throw new CustomException("El código de la categoría ya existe.", HttpStatus.BAD_REQUEST);
+        }
+
+        if (request.nombre() != null && !request.nombre().equals(categoria.getNombre())
+                && categoriaRepository.existsByNombre(request.nombre())) {
+            throw new CustomException("El nombre de la categoría ya existe.", HttpStatus.BAD_REQUEST);
+        }
+
         categoriaMapper.update(request, categoria);
         categoriaRepository.save(categoria);
     }
@@ -70,5 +84,13 @@ public class CategoriaServiceImpl implements CategoriaService {
         }
 
         categoriaRepository.deleteById(categoria.getId());
+    }
+
+    @Override
+    public List<CategoriaSimpleResponse> listarCategorias() {
+        List<Categoria> categorias = categoriaRepository.findByActivoTrue();
+        return categorias.stream()
+                .map(categoriaMapper::toSimpleResponse)
+                .toList();
     }
 }

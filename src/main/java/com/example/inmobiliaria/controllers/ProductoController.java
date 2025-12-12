@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.inmobiliaria.dto.producto.ProductoCreateRequest;
@@ -28,16 +29,20 @@ public class ProductoController {
     public ProductoController(ProductoService productoService) {
         this.productoService = productoService;
     }
-    
-    @PostMapping("/register")
+
+    @PostMapping("/registrar")
     public ProductoResponse registrar(@Valid @RequestBody ProductoCreateRequest request) {
 
         return productoService.registrar(request);
     }
 
     @GetMapping("/listar")
-    public Page<ProductoResponse> listarProductos(Pageable pageable) {
-        return productoService.listarProductos(pageable);
+    public Page<ProductoResponse> listarProductos( @RequestParam(required = false) String nombre,
+    @RequestParam(required = false) String marca,
+    @RequestParam(required = false) Integer categoria,
+    @RequestParam(required = false) Float precioMin,
+    @RequestParam(required = false) Float precioMax, Pageable pageable) {
+        return productoService.listarProductos(nombre, marca, categoria, precioMin, precioMax, pageable);
     }
 
     @PutMapping("/actualizar/{id}")
